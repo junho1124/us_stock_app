@@ -2,24 +2,27 @@ import 'package:hive/hive.dart';
 import 'package:us_stock_app/data/source/local/company_listing_entity.dart';
 
 class StockDao {
-  final box = Hive.box<List<CompanyListingEntity>>('stock.db');
   static const companyListing = "companyListing";
+
 
   ///추가
   Future insertCompanyListings(
-      List<CompanyListingEntity> companyListingEntity) async {
-    await box.put(companyListing, companyListingEntity);
+      List<CompanyListingEntity> companyListingEntities) async {
+    final box = await Hive.openBox<CompanyListingEntity>("stock.db");
+    await box.addAll(companyListingEntities);
   }
 
   ///클리어
   Future clearCompanyListings() async {
+    final box = await Hive.openBox<CompanyListingEntity>("stock.db");
     await box.clear();
   }
 
   ///검색
   Future<List<CompanyListingEntity>> searchCompanyListing(String query) async {
-    final companyListing = box.get(StockDao.companyListing, defaultValue: []);
-    return companyListing!
+    final box = await Hive.openBox<CompanyListingEntity>("stock.db");
+    final companyListing = box.values.toList();
+    return companyListing
         .where((e) =>
             e.name.toLowerCase().contains(query.toLowerCase()) ||
             query.toUpperCase() == e.symbol)
