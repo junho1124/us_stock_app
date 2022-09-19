@@ -1,5 +1,5 @@
 import 'package:hive/hive.dart';
-import 'package:us_stock_app/data/source/local/comapny_listing_entity.dart';
+import 'package:us_stock_app/data/source/local/company_listing_entity.dart';
 
 class StockDao {
   final box = Hive.box<List<CompanyListingEntity>>('stock.db');
