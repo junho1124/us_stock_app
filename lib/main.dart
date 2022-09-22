@@ -1,12 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:us_stock_app/data/source/local/company_listing_entity.dart';
-import 'package:us_stock_app/util/color_schemes.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:provider/provider.dart';
+import 'package:us_stock_app/data/source/local/company_listing_entity.dart';
+import 'package:us_stock_app/data/source/local/stock_dao.dart';
+import 'package:us_stock_app/data/source/remote/stock_api.dart';
+import 'package:us_stock_app/domain/repository/stock_repository_impl.dart';
+import 'package:us_stock_app/presentation/company_listings/company_listings_screen.dart';
+import 'package:us_stock_app/presentation/company_listings/company_listings_view_model.dart';
+import 'package:us_stock_app/util/color_schemes.dart';
 
 void main() async {
   await Hive.initFlutter();
   Hive.registerAdapter(CompanyListingEntityAdapter());
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => CompanyListingsViewModel(
+            StockRepositoryImpl(
+              StockApi(),
+              StockDao(),
+            ),
+          ),
+          child: const MyApp(),
+          builder: (context, widget) => widget ?? const MyApp(),
+        ),
+      ],
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -25,53 +46,7 @@ class MyApp extends StatelessWidget {
         colorScheme: darkColorScheme,
       ),
       themeMode: ThemeMode.system,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+      home: const CompanyListingsScreen(),
     );
   }
 }
