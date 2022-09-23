@@ -46,7 +46,7 @@ class CompanyListingsViewModel with ChangeNotifier {
       },
       error: (error) {
         // TODO error 처리
-        print('리모트 에러 : ' + error.toString());
+        print('리모트 에러 : $error');
       },
     );
 
