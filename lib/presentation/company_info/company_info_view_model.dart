@@ -3,11 +3,14 @@ import 'package:us_stock_app/domain/repository/stock_repository.dart';
 import 'package:us_stock_app/presentation/company_info/company_info_state.dart';
 
 class CompanyInfoViewModel with ChangeNotifier {
+
+
   final StockRepository _repository;
 
   var _state = CompanyInfoState();
 
   CompanyInfoState get state => _state;
+
 
   CompanyInfoViewModel(this._repository, String symbol) {
     loadCompanyInfo(symbol);
